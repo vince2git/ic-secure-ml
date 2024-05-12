@@ -1,0 +1,3 @@
+service : {
+    "mnist_inf1": (vec float32) -> (vec float32);
+}

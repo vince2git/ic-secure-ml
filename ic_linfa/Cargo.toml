@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "src/ic_linfa_backend"
+]
+resolver = "2"

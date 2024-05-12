@@ -1,0 +1,25 @@
+{
+  "canisters": {
+    "mnist": {
+      "type": "custom",
+      "main": "src/mnist.ts",
+      "candid": "src/mnist.did",
+      "candid_gen": "http",
+      "build": "npx azle mnist",
+      "wasm": ".azle/mnist/mnist.wasm",
+      "gzip": true,
+      "opt_level": "4",
+      "assets": [["src/mnist.csv","mnist.csv"]],
+      "metadata": [
+        {
+          "name": "candid:service",
+          "path": "src/train.did"
+        },
+        {
+          "name": "cdk:name",
+          "content": "azle"
+        }
+      ]
+    }
+  }
+}

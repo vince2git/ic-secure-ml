@@ -1,0 +1,20 @@
+{
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
+  "name": "ic_linfa",
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "prebuild": "npm run prebuild --workspaces --if-present",
+    "pretest": "npm run prebuild --workspaces --if-present",
+    "start": "npm start --workspaces --if-present",
+    "test": "npm test --workspaces --if-present",
+    "generate": "sh did.sh && dfx generate && npm run format"
+  },
+  "type": "module",
+  "workspaces": [
+    "src/ic_linfa_frontend"
+  ]
+}
+

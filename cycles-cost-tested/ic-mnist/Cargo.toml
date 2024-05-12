@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "src/ic_mnist_backend",
+]
+resolver = "2"
+[workspace.dependencies]
+canbench-rs = "0.1.1"
