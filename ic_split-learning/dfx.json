@@ -1,0 +1,30 @@
+{
+  "canisters": {
+    "ic_usl_backend": {
+      "candid": "src/ic_usl_backend/ic_usl_backend.did",
+      "declarations": {
+        "node_compatibility": true
+      },
+      "package": "ic_usl_backend",
+      "type": "rust"
+    },
+    "ic_usl_frontend": {
+      "dependencies": [
+        "ic_usl_backend"
+      ],
+      "source": [
+        "src/ic_usl_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "ic_usl_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

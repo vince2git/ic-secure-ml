@@ -10,6 +10,8 @@ First install dfx https://internetcomputer.org/docs/current/developer-docs/getti
 # Starts the replica, running in the background
 dfx start --background
 
-# Deploys your canisters to the replica and generates your candid interface
-dfx deploy
+cd src/ic_usl_frontend
+
+# build client wasm and deploy canister locally
+npm run setup
 ```

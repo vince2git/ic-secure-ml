@@ -1,0 +1,27 @@
+[package]
+name = "ic_usl_backend"
+authors = ["Vincent B."]
+version = "0.1.0"
+edition = "2021"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+candid = "0.10"
+ic-cdk = "0.14"
+ic-cdk-timers = "0.7"
+serde = { version = "1.0.203", features = ["derive"] } # Feel free to remove this dependency if you don't need timers
+serde_json = "1.0.118"
+flate2 = "1.0.30"
+ic-cdk-macros = "0.14.0"
+getrandom = { version = "0.2", features = ["custom"] }
+ndarray = "0.15.6"
+ndarray-rand = "0.14.0"
+rand_distr = "0.4.3"
+lazy_static = "1.4.0"
+rand = "0.8.5"
+

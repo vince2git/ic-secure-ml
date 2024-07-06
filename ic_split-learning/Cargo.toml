@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "src/ic_usl_backend"
+]
+resolver = "2"

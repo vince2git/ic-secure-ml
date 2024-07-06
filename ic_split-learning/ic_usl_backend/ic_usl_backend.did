@@ -1,0 +1,14 @@
+type ImagesBatch = record { labels : vec blob; tensor : vec blob };
+type ModelUpdate = record {
+  dense2_weights : vec vec float64;
+  dense2_bias : vec float64;
+};
+type Train2Result = record {
+  loss : float32;
+  server_gradients : vec vec float32;
+};
+service : {
+  get_model_update : () -> (ModelUpdate) query;
+  predict_forward : (vec float64) -> (vec float64) query;
+  train2 : (ImagesBatch, float32) -> (Train2Result);
+}
