@@ -7,6 +7,7 @@ use rand::{rngs::SmallRng, SeedableRng};
 use std::error::Error;
 
 pub(crate) fn run(csv_content: String) -> Result<String, String> {
+    //ic_cdk::println!("start");
     let ds = load_csv_dataset(&csv_content).map_err(|e| e.to_string())?;
     let (train, valid) = ds
         .map_targets(|v| *v > 6)
@@ -31,7 +32,7 @@ pub(crate) fn run(csv_content: String) -> Result<String, String> {
     }
     let val_predictions = model.predict(&valid);
     let log_loss = val_predictions.log_loss(&valid.as_single_targets().to_vec());
-
+    //ic_cdk::println!("end");
     Ok(format!("valid log loss {:?}", log_loss))
 }
 
@@ -60,7 +61,7 @@ fn from_csv(csv_content: &str) -> Result<Array2<f64>, Box<dyn Error>> {
         let record: Vec<f64> = result?;
         records.push(record);
     }
-
+    //ic_cdk::println!("len {}",records.len());
     let nrows = records.len();
     let ncols = records.get(0).map_or(0, |r| r.len());
     Array2::from_shape_vec((nrows, ncols), records.into_iter().flatten().collect()).map_err(Into::into)

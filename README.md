@@ -6,6 +6,8 @@ The goal is to create a prototype of a secure and decentralized machine learning
 
 ./cycles-cost-tested/ic_djstorch folder contains test with instruction overflow (more than 40B instructions) with only 10 MNIST records using Azle.
 
-./ic_linfa is a first working machine learning (train/test) prototype using [Linfa](https://github.com/rust-ml/linfa) ML toolkit on the Internet Computer and needs to be secured.
+./ic_linfa is a first working machine learning (train/test) prototype using [Linfa](https://github.com/rust-ml/linfa) ML toolkit on the Internet Computer and is secured with encrypted message to and from the canister.
+
+- You can try the prototype here https://zvrui-xqaaa-aaaao-a3pbq-cai.icp0.io/
 
 I'm new to Rust language, so this is also a learning project for me.

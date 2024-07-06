@@ -1,2 +1,15 @@
 type Result = variant { Ok : text; Err : text };
-service : { linnerud : (text) -> (Result); wines : (text) -> (Result) query }
+service : {
+  clear_all : (text) -> ();
+  decrypt_with_shared_secret : (text, text, text) -> (blob, blob) query;
+  generate_sk_pub : (text, blob) -> (blob);
+  tsne : (text, text, text, nat64, float64, float64, nat64) -> (
+      blob,
+      blob,
+    ) query;
+  tsne_update : (text, text, text, nat64, float64, float64, nat64) -> (
+      blob,
+      blob,
+    );
+  wines : (text, text, text) -> (Result) query;
+}

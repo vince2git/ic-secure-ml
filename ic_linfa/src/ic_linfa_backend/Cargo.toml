@@ -1,6 +1,7 @@
 [package]
 name = "ic_linfa_backend"
 version = "0.1.0"
+authors = ["Vincent B."]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -8,19 +9,26 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib"]
 
+
 [dependencies]
 candid = "0.10"
-ic-cdk = "0.13"
-ic-cdk-timers = "0.7" # Feel free to remove this dependency if you don't need timers
-ic-cdk-macros = "0.13.3"
-ic-getrandom = { path = "../ic-getrandom" }
+ic-cdk = "0.15.0"
+ic-cdk-macros = "0.15.0"
 getrandom = { version = "0.2", features = ["custom"] }
 linfa = "0.7.0"
 linfa-elasticnet = "0.7.0"
-linfa-datasets = "0.7.0"
 linfa-ftrl = "0.7.0"
+linfa-reduction = "0.7.0"
+linfa-tsne = "0.7.0"
 ndarray = "0.15.1"
 serde = { version = "1.0.201", features = ["derive"] }
 serde_json = "1.0.117"
 csv = "1.3.0"
 rand = "0.8.5"
+rand_core = "0.6.4"
+base64 = "0.22.1"
+rand_chacha = "0.3.1"
+crypto_box = "0.9.1"
+anyhow = "1.0.83"
+sha2 = "0.10.8"
+
