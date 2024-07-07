@@ -151,7 +151,7 @@ async function clearKeys(){
 
 }
 function evalLocalTsne(){
-    result3 ='Performing computations...'
+  result3 ='Performing computations...';
   let startTime=performance.now()
   let response
   try{
@@ -249,7 +249,7 @@ let mnist=mnistExtract;
 let pca=2;
 let perp=2;
 let thres=0.9;
-let iter=35;
+let iter=20;
 </script>
 
 
@@ -267,8 +267,8 @@ let iter=35;
             threshold<input type="number" bind:value={thres}/>
             max iter<input type="number" bind:value={iter}/>
         <br><br>
-        <button on:click={evalTsne}>Eval on IC query (max 5k instructions)</button>
-        <button on:click={evalTsneUpdate}>Eval on IC update (max 40k instructions)</button>
+        <button on:click={evalTsne}>Eval on IC query (max 5B instructions)</button>
+        <button on:click={evalTsneUpdate}>Eval on IC update (max 40B instructions)</button>
         <button on:click={evalLocalTsne}>Eval in local WASM</button> {err}
         <br><br>
         <section id="result3">{result3}</section>
@@ -307,6 +307,9 @@ let iter=35;
              <a href="https://github.com/vince2git/ic-secure-ml">Source code here</a>
         {@html m}
         <style>
+            canvas {
+                border: 1px solid;
+            }
         @media (max-width:500px){
             canvas{
                 width:400px;
