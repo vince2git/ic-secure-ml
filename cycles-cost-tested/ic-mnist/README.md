@@ -1,3 +1,5 @@
+Base from the project of Marcin Nowak-Liebiediew [https://github.com/smallstepman/ic-mnist](https://github.com/smallstepman/ic-mnist). Thanks to him.
+
 # ic-mnist
 
 1. The frontend provides a canvas where users can draw a digit. 
