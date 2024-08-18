@@ -3,3 +3,10 @@ members = [
     "src/ic_linfa_backend"
 ]
 resolver = "2"
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
+
+#[patch.crates-io]
+#linfa = {path = "src/ic_linfa_backend/linfa-0.7.0"}

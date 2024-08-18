@@ -3,6 +3,14 @@ service : {
   clear_all : (text) -> ();
   decrypt_with_shared_secret : (text, text, text) -> (blob, blob) query;
   generate_sk_pub : (text, blob) -> (blob);
+  trees : (text, text, text, nat64, float64, float64, nat64) -> (
+      blob,
+      blob,
+    ) query;
+  trees_update : (text, text, text, nat64, float64, float64, nat64) -> (
+      blob,
+      blob,
+    );
   tsne : (text, text, text, nat64, float64, float64, nat64) -> (
       blob,
       blob,
@@ -11,5 +19,8 @@ service : {
       blob,
       blob,
     );
-  wines : (text, text, text) -> (Result) query;
+  wines : (text, text, text) -> (
+       blob,
+       blob,
+     ) query;
 }

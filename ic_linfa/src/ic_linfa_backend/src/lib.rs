@@ -1,8 +1,7 @@
 mod elasticnet;
 mod ftrl;
 mod tsne;
-
-
+mod trees;
 
 use ic_cdk_macros::{query, update};
 
@@ -140,7 +139,7 @@ impl CryptoRng for CustomRng {}
 #[update]
 fn generate_sk_pub(sess:String,client_key:Vec<u8>) -> Vec<u8> {
     //clean_inactive_sessions();
-    ic_cdk::println!("start {:?}",ic_cdk::api::time());
+    ic_cdk::println!("start");
     let mut rng = CustomRng;
     let secret = SecretKey::generate(&mut rng);
 
@@ -180,6 +179,8 @@ fn encrypt( sess: &String, message: String) -> (Vec<u8>, Vec<u8>) {
         let cypher = SalsaBox::new(&pub_key,&secret_key);
         let cyphertext= cypher.encrypt(&nonce,message.as_bytes());
         //ic_cdk::println!("{:?}  {:?}",&cyphertext,&nonce);
+        let instructions = ic_cdk::api::performance_counter(0);
+        ic_cdk::println!("{}",format!("i:{}", instructions));
         (cyphertext.unwrap(),nonce.to_vec())
     })
 
@@ -237,7 +238,7 @@ fn clear_all(sess:String) {
             last_active: now-300000000001,
         });
     });
-
+    ic_cdk::println!("erase");
 }
 
 
@@ -249,24 +250,26 @@ fn linnerud(csvcontent: String,nonce:String) -> Result<String, String> {
 }
 */
 #[query]
-fn wines(sess:String,csvcontent: String,nonce:String) -> Result<String, String> {
+fn wines(sess:String,csvcontent: String,nonce:String) -> (Vec<u8>, Vec<u8>){
+    ic_cdk::println!("wines");
     match get_session(&sess) {
         Some(..) => {
             let csv= decrypt_internal(&sess,&csvcontent,&nonce);
-            ftrl::run(csv).map_err(|e| e.to_string())
-
+            encrypt(&sess,ftrl::run(csv))
         },
-        None => Ok(String::new())
+        None => (Vec::new(),Vec::new())
     }
 
 }
 #[query]
 fn tsne(sess:String,csvcontent: String,nonce:String,pca:usize,perp:f64,thres:f64,i:usize) -> (Vec<u8>, Vec<u8>) {
+    ic_cdk::println!("tsne");
+
     match get_session(&sess) {
         Some(..) => {
             let csv= decrypt_internal(&sess,&csvcontent,&nonce);
 
-            encrypt(&sess,tsne::run(csv,pca,perp,thres,i))
+            encrypt(&sess,tsne::run(csv,pca,perp,thres,i,false))
 
         },
         None => (Vec::new(),Vec::new())
@@ -274,13 +277,44 @@ fn tsne(sess:String,csvcontent: String,nonce:String,pca:usize,perp:f64,thres:f64
 }
 #[update]
 fn tsne_update(sess:String,csvcontent: String,nonce:String,pca:usize,perp:f64,thres:f64,i:usize) -> (Vec<u8>, Vec<u8>) {
+    ic_cdk::println!("tsneU");
     match get_session(&sess) {
         Some(..) => {
             let csv= decrypt_internal(&sess,&csvcontent,&nonce);
-            encrypt(&sess,tsne::run(csv,pca,perp,thres,i))
+            encrypt(&sess,tsne::run(csv,pca,perp,thres,i,true))
 
         },
         None => (Vec::new(),Vec::new())
     }
 }
+
+#[query]
+fn trees(sess:String,csvcontent: String,nonce:String,pca:usize,perp:f64,thres:f64,i:usize) -> (Vec<u8>, Vec<u8>) {
+    ic_cdk::println!("trees");
+
+    match get_session(&sess) {
+        Some(..) => {
+            let csv= decrypt_internal(&sess,&csvcontent,&nonce);
+
+            encrypt(&sess,trees::run(csv,pca,perp,thres,i,false))
+
+        },
+        None => (Vec::new(),Vec::new())
+    }
+}
+#[update]
+fn trees_update(sess:String,csvcontent: String,nonce:String,pca:usize,perp:f64,thres:f64,i:usize) -> (Vec<u8>, Vec<u8>) {
+    ic_cdk::println!("treesU");
+
+    match get_session(&sess) {
+        Some(..) => {
+            let csv= decrypt_internal(&sess,&csvcontent,&nonce);
+
+            encrypt(&sess,trees::run(csv,pca,perp,thres,i,false))
+
+        },
+        None => (Vec::new(),Vec::new())
+    }
+}
+
 ic_cdk_macros::export_candid!();

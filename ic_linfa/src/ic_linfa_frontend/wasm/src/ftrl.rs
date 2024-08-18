@@ -7,16 +7,19 @@ use ndarray::{array, Array1, Array2, ArrayBase, Axis, Data, Dimension, Ix1, Ix2,
 use rand::{rngs::SmallRng, SeedableRng};
 use std::error::Error;
 use itertools::iproduct;
-
 use rand::seq::SliceRandom;
-use serde_json::json;
-
 use rand_chacha::ChaCha8Rng;
+use serde_json::json;
+use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
+use web_sys::console;
 
-pub(crate) fn run(csv_content: String) ->  String {
-    //ic_cdk::println!("start");
+
+pub fn run(csv_content: String) ->  String {
+
     let ds = load_csv_dataset(&csv_content).unwrap();
     let (train, valid) = split_dataset_preserving_classes(ds.map_targets(|v| *v > 6), 0.8, 42);
+
 
     let params = Ftrl::params()
         .alpha(0.1)
@@ -64,12 +67,11 @@ pub(crate) fn run(csv_content: String) ->  String {
     let final_pred_bool = final_predictions.map(|p| **p > best_threshold as f32);
     let final_cm = final_pred_bool.confusion_matrix(valid.targets()).unwrap();
     hyper_results.push_str(&format!("F1 score final : {}", final_cm.f1_score()));
-
-    let debug=format!("Class distribution: {} positives out of {} samples,{:?}, {:?}, {:?}, {:?},{:?}", class_distribution, train.nsamples(), cm,
-                &val_predictions.slice(s![0..5]),
-                &valid.targets().slice(s![0..5]),
-                &hyper_results,
-                &valid.targets()
+    console::log_1(&JsValue::from(format!("{:?}", &hyper_results)));
+    let debug=format!("Class distribution: {} positives out of {} samples,{:?}, {:?}, {:?}, {:?}", class_distribution, train.nsamples(), cm,
+                      &val_predictions.slice(s![0..5]),
+                      &valid.targets().slice(s![0..5]),
+                      &hyper_results
     );
     json!({
         "log_loss": log_loss,
@@ -125,7 +127,6 @@ fn test_confusion_matrix_cases() -> String{
     for (i, (pred, true_labels)) in test_cases.iter().enumerate() {
         let pred_array = Array1::from(pred.clone());
         let true_labels_array = Array1::from(true_labels.clone());
-
 
         let cm = pred_array.confusion_matrix(&true_labels_array).unwrap();
         results.push_str(&format!("Test Case {}: {:?}\n", i + 1, cm));
