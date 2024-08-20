@@ -1,12 +1,12 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use csv::ReaderBuilder;
-use linfa::dataset::{AsSingleTargets, DatasetBase};
+use linfa::dataset::{AsSingleTargets, DatasetBase, Labels};
 use linfa::prelude::*;
 use linfa_ftrl::Ftrl;
 use ndarray::{array, Array1, Array2, ArrayBase, Axis, Data, Dimension, Ix1, Ix2, OwnedRepr, s};
 use rand::{rngs::SmallRng, SeedableRng};
 use std::error::Error;
-use itertools::iproduct;
+use itertools::{iproduct, Itertools};
 use rand::seq::SliceRandom;
 use rand_chacha::ChaCha8Rng;
 use serde_json::json;
@@ -47,13 +47,14 @@ pub fn run(csv_content: String) ->  String {
     // Vérifier la matrice de confusion
     let true_labels = valid.as_single_targets();
     let cm = pred_bool.confusion_matrix(&true_labels).unwrap();
-
+    let roc = val_predictions.roc(&valid.as_single_targets().to_vec()).unwrap();
     //ic_cdk::println!("end");
 
     let accuracy = cm.accuracy();
     let precision = cm.precision();
     let recall = cm.recall();
     let f1_score = cm.f1_score();
+    let auc = roc.area_under_curve();
     let class_distribution = train.targets().map(|&x| if x { 1 } else { 0 }).sum();
 
     let mut hyper_results = String::new();
@@ -65,13 +66,15 @@ pub fn run(csv_content: String) ->  String {
     // Évaluation finale
     let final_predictions = best_model.predict(&valid);
     let final_pred_bool = final_predictions.map(|p| **p > best_threshold as f32);
-    let final_cm = final_pred_bool.confusion_matrix(valid.targets()).unwrap();
-    hyper_results.push_str(&format!("F1 score final : {}", final_cm.f1_score()));
+    let final_cm = final_pred_bool.confusion_matrix(&true_labels).unwrap();
+    let final_roc = final_predictions.roc(&valid.as_single_targets().to_vec()).unwrap();
+    hyper_results.push_str(&format!("AUC finale : {}", final_roc.area_under_curve()));
     console::log_1(&JsValue::from(format!("{:?}", &hyper_results)));
     let debug=format!("Class distribution: {} positives out of {} samples,{:?}, {:?}, {:?}, {:?}", class_distribution, train.nsamples(), cm,
                       &val_predictions.slice(s![0..5]),
                       &valid.targets().slice(s![0..5]),
-                      &hyper_results
+                      &hyper_results,
+
     );
     json!({
         "log_loss": log_loss,
@@ -79,6 +82,7 @@ pub fn run(csv_content: String) ->  String {
         "precision": precision,
         "recall": recall,
         "f1_score": f1_score,
+        "AUC":auc,
         "debug":debug
     }).to_string()
 }
@@ -191,10 +195,15 @@ fn hyperparameter_search(train: &Dataset<f64, bool, Ix1>, valid: &Dataset<f64, b
                 let has_false = pred_bool.iter().any(|&x| !x);
 
                 if has_true && has_false {
-                    pred_bool.confusion_matrix(valid.targets()).ok().map(|cm| {
+                    predictions.roc(&valid.as_single_targets().to_vec()).ok().map(|roc|{
+                        let auc=roc.area_under_curve();
+                        (model, auc, alpha, beta, l1_ratio, l2_ratio, threshold)
+                    })
+
+                    /*pred_bool.confusion_matrix(valid.targets()).ok().map(|cm| {
                         let MCC = cm.mcc();
                         (model, MCC, alpha, beta, l1_ratio, l2_ratio, threshold)
-                    })
+                    })*/
                 } else {
                     None
                 }
@@ -217,13 +226,13 @@ pub fn split_dataset_preserving_classes<F, T, D>(
 ) -> (Dataset<F, T, D>, Dataset<F, T, D>)
 where
     F: Float,
-    T: Clone + std::hash::Hash + Eq, D: Dimension + ndarray::RemoveAxis
+    T: Clone + std::hash::Hash + Eq+ std::cmp::Ord, D: Dimension + ndarray::RemoveAxis
 
 {
     let mut rng = ChaCha8Rng::seed_from_u64(seed);
 
     // Grouper les indices par classe
-    let mut indices_by_class: HashMap<T, Vec<usize>> = HashMap::new();
+    let mut indices_by_class: BTreeMap<T, Vec<usize>> = BTreeMap::new();
     for (idx, target) in dataset.targets().iter().enumerate() {
         indices_by_class.entry(target.clone()).or_default().push(idx);
     }
