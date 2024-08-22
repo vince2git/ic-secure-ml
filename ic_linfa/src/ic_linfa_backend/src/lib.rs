@@ -71,8 +71,26 @@ fn clean_inactive_sessions() {
     STATE.with(|state| {
         let mut state = state.borrow_mut();
         let now = ic_cdk::api::time();
-        state.sessions.retain(|_, session| now - session.last_active < 300000000000);
+        let z: Vec<u8> = vec![0; 32];
+
+        // Collecte des sessions à supprimer
+        let sessions_to_remove: Vec<String> = state.sessions
+            .iter()
+            .filter(|(_, session)| now - session.last_active >= 300000000000)
+            .map(|(sess, _)| sess.clone())
+            .collect();
+
+        // Effacement sécurisé et suppression
+        for sess in sessions_to_remove {
+            if let Some(mut session) = state.sessions.remove(&sess) {
+                // Effacement sécurisé des données sensibles
+                session.sec.fill(0);
+                session.peer_public_key.fill(0);
+                // La session est automatiquement supprimée avec remove
+            }
+        }
     });
+
 }
 
 
