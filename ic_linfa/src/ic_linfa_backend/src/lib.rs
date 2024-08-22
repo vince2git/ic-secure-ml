@@ -59,6 +59,7 @@ fn update_session(session_id: String, sec: Vec<u8>, peer_public_key: Vec<u8>) {
 
 // Fonction pour obtenir une session
 fn get_session(session_id: &str) -> Option<Session> {
+    clean_inactive_sessions();
     STATE.with(|state| {
         let state = state.borrow();
         state.sessions.get(session_id).cloned()
