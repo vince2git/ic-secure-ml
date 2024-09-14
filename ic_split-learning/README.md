@@ -16,6 +16,9 @@ dfx start --background
 
 cd src/ic_usl_frontend
 
+#install wasm-pack
+npm i -g wasm-pack
+
 # build client wasm and deploy canister locally
 npm run setup
 ```
